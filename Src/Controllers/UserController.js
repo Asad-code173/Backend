@@ -27,7 +27,7 @@ const generateAccessandRefreshTokens = async (userId) => {
     } catch (error) {
         console.log("token generation error", error);
 
-        throw new ApiError(500, "some thing went wrong");
+        // throw new ApiError(500, "some thing went wrong");
 
     }
 }
@@ -95,7 +95,7 @@ const loginUser = asyncHandler(async (req, res) =>{
     throw new ApiError(401, "Invalid user credentials")
     }
 
-   const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
+   const {accessToken, refreshToken} = await generateAccessandRefreshTokens(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 

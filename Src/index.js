@@ -4,7 +4,7 @@
 
 
 import dotenv from "dotenv"
-import connectDB from './dbConnect/db.js';
+import DbConnect from './dbConnect/db.js';
 import {app} from '../app.js'
 
 dotenv.config({
@@ -12,12 +12,12 @@ dotenv.config({
 })
 
 
-connectDB()
+DbConnect()
 // Middleware use kartay hain to app.use istamal kartay hain
 .then(()=>{
         // error kay liye bhee listen karaien
     // app kay andar listen karengay
-    app.listen(process.envPORT || 8000,()=>{
+    app.listen(process.env.PORT || 8000,()=>{
         console.log(`Server is Running at port ${process.env.PORT}`);
 
     })
