@@ -1,9 +1,11 @@
 import { Router } from "express";
 import {
+    getAdminDashboard,
     loginUser,
     logoutUser,
     refreshAccessToken,
-    registerUser
+    registerUser,
+   
 } from '../Controllers/UserController.js'
 import { verifyJWT,isAdmin} from "../Middlewares/Authmiddleware.js";
 
@@ -16,7 +18,7 @@ router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
 
 // admin
-router.route("/admin/dashboard").post(verifyJWT,isAdmin,loginUser)
+router.route("/admin/dashboard").get(verifyJWT,isAdmin,getAdminDashboard)
 
 
 
