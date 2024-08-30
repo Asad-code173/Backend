@@ -3,33 +3,34 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
 import { User } from "../Models/User.js";
 
-export const verifyJWT = asyncHandler(async(req, _, next) => {
+export const verifyJWT = asyncHandler(async (req, _, next) => {
+
+    console.log("verifyJWT middleware reached"); // Add this line
+
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
         console.log(req.cookies);
         
         console.log("verifying token middleware ",token);
         if (!token) {
-            throw new ApiError(401, "Unauthorized request")
+            throw new ApiError(401, "Unauthorized request");
         }
-    
-        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-        console.log("decodedToken is" +decodedToken);
-        
-    
-        const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
-        console.log(user);
-        
-    
+
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        console.log("Decoded token is ", decodedToken);
+
+        const user = await User.findById(decodedToken?._id).select("-password -refreshToken");
+        console.log("User is", user);
+
         if (!user) {
-            
-            throw new ApiError(401, "Invalid Access Token")
+            throw new ApiError(401, "Invalid Access Token");
         }
     
         req.user = user;
         next()
     } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid access token")
+        console.error("Error in verifyJWT:", error); // Log the error
+        throw new ApiError(401, error?.message || "Invalid access token");
     }
     
 
@@ -39,20 +40,19 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
 export const isAdmin = asyncHandler(async(req,res,next)=>{
     try {
         const user = req.user;
-        console.log("User object is from middleware",user);
+        console.log("User object is ",user);
+        
     
         if (!user) {
-            throw new ApiError(401,"User not authenticated")
+            throw new ApiError(401, "User not authenticated");
         }
         
         if (user.role !== 1) {
-   
-            throw new ApiError(403,"User is not an admin")
+            throw new ApiError(403, "User is not an admin");
         }
         next();
     } catch (error) {
         console.log(error);
-        throw new ApiError(403, error?.message || "Unauthorized")
         
     }
 

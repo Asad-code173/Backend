@@ -7,7 +7,7 @@ import {
     registerUser,
    
 } from '../Controllers/UserController.js'
-import { verifyJWT,isAdmin} from "../Middlewares/Authmiddleware.js";
+import { verifyJWT ,isAdmin} from "../Middlewares/Authmiddleware.js";
 
 const router = Router();
 router.route("/register").post(registerUser)

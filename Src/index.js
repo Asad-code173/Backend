@@ -11,20 +11,16 @@ dotenv.config({
     path:'./.env'
 })
 
-
 connectDB()
-// Middleware use kartay hain to app.use istamal kartay hain
-.then(()=>{
-        // error kay liye bhee listen karaien
-    // app kay andar listen karengay
-    app.listen(process.envPORT || 8000,()=>{
-        console.log(`Server is Running at port ${process.env.PORT}`);
-
+.then(() => {
+    app.listen(process.envPORT || 8000, () => {
+        console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
     })
 })
-.catch((err)=>{
-    console.log("MongoDb connection error !!!",err);
+.catch((err) => {
+    console.log("MONGO db connection failed !!! ", err);
 })
+
 
 
 

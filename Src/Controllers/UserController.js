@@ -8,13 +8,13 @@ import jwt from "jsonwebtoken";
 const generateAccessAndRefereshTokens = async(userId) =>{
     try {
         const user = await User.findById(userId)
-        console.log("use is ",user);
+        // console.log("user is ",user);
         
         const accessToken = user.generateAccessToken()
-        console.log("Access token is ",accessToken);
+        // console.log("Access token is ",accessToken);
         
         const refreshToken = user.generateRefreshToken()
-        console.log("Refresh token is ",refreshToken);
+        // console.log("Refresh token is ",refreshToken);
  
 
         user.refreshToken = refreshToken
@@ -24,7 +24,12 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 
 
     } catch (error) {
+
         throw new ApiError(500, "Something went wrong while generating referesh and access token")
+
+        console.log("token generation error", error);
+
+
     }
 }
 
@@ -71,7 +76,7 @@ const loginUser = asyncHandler(async (req, res) =>{
 
 
     const {email, username, password} = req.body
-    console.log(email);
+    // console.log(email);
 
     if (!(username || email)) {
         throw new ApiError(400, "username or email is required")
