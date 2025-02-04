@@ -38,7 +38,7 @@ const registerUser = asyncHandler( async (req, res) => {
 
 
     const { username, email, password } = req.body;
-    console.log(username)
+    console.log(username,email)
 
     if (!username || !email || !password) {
         throw new ApiError(400, "This field is  Required");
@@ -76,7 +76,7 @@ const loginUser = asyncHandler(async (req, res) =>{
 
 
     const {email, username, password} = req.body
-    // console.log(email);
+    console.log(email);
 
     if (!(username || email)) {
         throw new ApiError(400, "username or email is required")
@@ -195,7 +195,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 const getAdminDashboard = asyncHandler(async (req,res)=>{
-    res.send("Welcome admin")
+    res.send({message:"Welcome admin"})
 })
 
 
