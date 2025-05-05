@@ -5,6 +5,10 @@ const CategorySchema = new Schema(
             type:String,
             required:true,
             unique:true
+        },
+        slug:{
+            type:String,
+            lowercase:true
         }
     },
     {

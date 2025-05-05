@@ -4,84 +4,92 @@ import jwt from "jsonwebtoken"
 
 const userSchema = new Schema(
     {
-        username:{
-            type :String,
-            required:true,
-            unique:true,
-            lowercase:true,
-            trim:true,
+        username: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
             // agar kise bhee field ko apnay searchable banana hy to uska index true karlo
-            index:true
+            index: true
         },
         email:
         {
-            type:String,
-            required:true,
-            unique:true,
-            lowercase:true,
-            trim:true,
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+            index:true
         },
-        password:{
-            type:String,
-            required:[true,"Password is Required"]
+        password: {
+            type: String,
+            required: [true, "Password is Required"]
         },
-        refreshToken:{
-            type:String,
+        refreshToken: {
+            type: String,
         },
         role: {
             type: String,
             enum: ["user", "admin"],
             default: "user",
-        }
+        },
+        
 
     },
     {
 
-      timestamps:true,
-   }
+        timestamps: true,
+    }
 );
 
 // password encryption
 
-userSchema.pre("save",async function (next) {
-    if(!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password,10)
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 12)
     next();
 })
 // password comparing
 
-userSchema.methods.isPasswordCorrect = async function(password){
-    return await bcrypt.compare(password,this.password)
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password)
 }
+
+
+
+
+
 
 // generateAcess token 
 
-userSchema.methods.generateAccessToken = function(){
-    return jwt.sign(
-          {
-              _id:this._id,
-              email:this.email,
-              username:this.username,
-              role:this.role,
-              
-          },
-          process.env.ACCESS_TOKEN_SECRET,
-          {
-              expiresIn:process.env.ACCESS_TOKEN_EXPIRY
-          }
-      )
-  }
-
-// generateRefreshtoken
-userSchema.methods.generateRefreshToken = function(){
+userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
-            _id:this._id,
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            role: this.role,
+
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
             
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
+
+// generateRefreshtoken
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
-            expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
     )
 }

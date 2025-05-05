@@ -11,7 +11,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
         // console.log(req.cookies);
         
-        console.log("verifying token middleware ",token);
+        // console.log("verifying token middleware ",token);
         if (!token) {
             throw new ApiError(401, "Unauthorized request");
         }
@@ -39,19 +39,16 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 export const isAdmin = asyncHandler(async(req, _,next)=>{
     try {
         const user = req.user;
-        console.log("User object is ",user);
-        if (user.role !== 1) {
+        // console.log("User object is ",user);
+        if (user.role !== "admin") {
             throw new ApiError(403, "User is not an admin");
         }
         else{
             next();
         }
     } catch (error) {
-        console.log(error);
+        throw new ApiError(403, error?.message || "Forbidden:Not an admin");
         
         
     }
-
-
-
 })
