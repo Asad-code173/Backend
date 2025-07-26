@@ -8,21 +8,28 @@ const EnquiresSchema = new Schema(
         email: {
             type: String,
             required: true,
-            unique: true
+
         },
-        phone: {
+        contactNumber: {
             type: String,
             required: true,
 
         },
-        Message: {
+        message: {
             type: String,
             required: true,
         },
+        messageType: {
+            type: String,
+            required: true,
+            enum: ["enquiry", "complaint"],
+            default: "enquiry"
+        },
+
         status: {
             type: String,
             required: true,
-            enum: ['Pending', 'In Progress', 'Completed']
+            enum: ['Pending', 'In Progress', 'Solved']
         },
     },
     {

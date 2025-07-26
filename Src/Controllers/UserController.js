@@ -40,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
     const { username, email, password } = req.body;
-    console.log(username, email)
+    console.log(username, email,password)
 
     if (!username || !email || !password) {
         throw new ApiError(400, "This field is  Required");

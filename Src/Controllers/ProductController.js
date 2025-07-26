@@ -83,7 +83,6 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const getProducts = asyncHandler(async (req, res) => {
     try {
-
         const products = await Products.aggregate([
             {
                 $lookup: {
@@ -105,7 +104,12 @@ const getProducts = asyncHandler(async (req, res) => {
                     slug: 1,
                     variants: 1,
                     photo: 1,
-                    category: "$Productsdetails.name" // Replace category ID with name
+                    category: {
+                        _id: "$Productsdetails._id",
+                        name: "$Productsdetails.name"
+                    }
+
+                    
                 }
             }
 
@@ -128,6 +132,9 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 
     try {
         const singleProduct = await Products.aggregate([
+            {
+                $match: { slug: req.params.slug }
+            },
             {
                 $lookup: {
                     from: "categories",
@@ -152,7 +159,10 @@ const getSingleProduct = asyncHandler(async (req, res) => {
                     slug: 1,
                     variants: 1,
                     photo: 1,
-                    category: "$productDetail.name"
+                    category: {
+                        _id: "$productDetail._id",
+                        name: "$productDetail.name"
+                    }
                 }
             }
         ])
