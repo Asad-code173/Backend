@@ -21,9 +21,9 @@ const ProductSchema = new Schema(
             lowercase:true
         },
       
-        category: {
+        subCategory: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Category',
+            ref: 'SubCategory',
             required: true
         },
         variants: [

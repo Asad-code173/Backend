@@ -19,11 +19,13 @@ import userRouter from './Src/routes/Userroute.js'
 import categoryRouter from './Src/routes/Categoryroute.js'
 import productRouter from './Src/routes/Productroute.js'
 import EnquiryRouter from "./Src/routes/Enquiryroute.js"
+import SubCategoryRouter from "./Src/routes/SubCategoryroute.js"
 
 app.use("/api/v1/users",userRouter);
 app.use("/api/v1/categories",categoryRouter)
 app.use("/api/v1/products",productRouter)
 app.use("/api/v1/enquiries",EnquiryRouter)
+app.use("/api/v1/subcategory",SubCategoryRouter)
 
 // http://localhost:8001/api/v1/users/register
 

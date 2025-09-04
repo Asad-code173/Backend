@@ -4,20 +4,21 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import slugify from "slugify"
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/Cloudinary.js"
-import { Category } from "../Models/Category.js"
+// import { Category } from "../Models/Category.js"
+import {SubCategory} from "../Models/subcategories.js"
 
 
 const createProduct = asyncHandler(async (req, res) => {
 
     console.log(req.body)
-    let { name, description, category, variants } = req.body
+    let { name, description, subCategory, variants } = req.body
     if (typeof variants === "string") {
         variants = JSON.parse(variants)
     }
     // category ID 67a51fd5d04f0ad39980c72a
 
 
-    if (!name || !description || !category || !Array.isArray(variants)) {
+    if (!name || !description || !subCategory || !Array.isArray(variants)) {
         throw new ApiError(400, "This field is required")
     }
 
@@ -51,8 +52,8 @@ const createProduct = asyncHandler(async (req, res) => {
     }
 
     // console.time("MongoDb Query time End")
-    const existingCategory = await Category.findById(category);
-    if (!existingCategory) {
+    const existingsubCategory = await SubCategory.findById(subCategory);
+    if (!existingsubCategory) {
         throw new ApiError(404, "Category not found. Please provide a valid category.");
 
     }
@@ -69,7 +70,7 @@ const createProduct = asyncHandler(async (req, res) => {
     const product = await Products.create({
         name,
         description,
-        category: existingCategory._id,
+        subCategory: existingsubCategory._id,
         variants,
         slug: slugify(name),
         photo: photo.url
@@ -81,53 +82,115 @@ const createProduct = asyncHandler(async (req, res) => {
 })
 
 
-const getProducts = asyncHandler(async (req, res) => {
+// const getProducts = asyncHandler(async (req, res) => {
+//     try {
+//         const products = await Products.aggregate([
+//             {
+//                 $lookup: {
+//                     from: "subcategories",
+//                     localField: "subCategory",
+//                     foreignField: "_id",
+//                     as: "Productsdetails"  // alias name
+
+//                 }
+//             },
+//             {
+//                 $unwind: "$Productsdetails"
+//             },
+//             {
+//                 $project: {
+//                     _id: 1,
+//                     name: 1,
+//                     description: 1,
+//                     slug: 1,
+//                     variants: 1,
+//                     photo: 1,
+//                     category: {
+//                         _id: "$Productsdetails._id",
+//                         name: "$Productsdetails.name"
+//                     }
+
+                    
+//                 }
+//             }
+
+//         ])
+//         if (!products) {
+//             throw new ApiError(404, "Product Not Found")
+//         }
+//         return res
+//             .status(201)
+//             .json(new ApiResponse(200, products, "products fetched  Successfully"));
+//     } catch (error) {
+//         console.log("Error in Fetching  the Products", error);
+//         return res.status(500).json(new ApiError(500, "Internal Server Error"));
+
+//     }
+
+
+// })
+
+const getAllProducts = asyncHandler(async (req, res) => {
     try {
         const products = await Products.aggregate([
             {
                 $lookup: {
-                    from: "categories",
-                    localField: "category",
+                    from: "subcategories",
+                    localField: "subCategory",
                     foreignField: "_id",
-                    as: "Productsdetails"  // alias name
-
+                    as: "subCategoryDetails",
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: "categories",
+                                localField: "parentCategory",
+                                foreignField: "_id",
+                                as: "categoryDetails"
+                            }
+                        },
+                        { $unwind: "$categoryDetails" }
+                    ]
                 }
             },
-            {
-                $unwind: "$Productsdetails"
-            },
+            { $unwind: "$subCategoryDetails" },
+
             {
                 $project: {
                     _id: 1,
                     name: 1,
+                    photo: 1,
                     description: 1,
                     slug: 1,
                     variants: 1,
-                    photo: 1,
+                    subCategory: {
+                        _id: "$subCategoryDetails._id",
+                        name: "$subCategoryDetails.name"
+                    },
                     category: {
-                        _id: "$Productsdetails._id",
-                        name: "$Productsdetails.name"
-                    }
-
-                    
+                        _id: "$subCategoryDetails.categoryDetails._id",
+                        name: "$subCategoryDetails.categoryDetails.name"
+                    },
+                    createdAt: 1,
+                    updatedAt: 1
                 }
             }
+        ]);
 
-        ])
-        if (!products) {
-            throw new ApiError(404, "Product Not Found")
+        if (!products || products.length === 0) {
+            throw new ApiError(404, "No products found");
         }
+
         return res
-            .status(201)
-            .json(new ApiResponse(200, products, "products fetched  Successfully"));
+            .status(200)
+            .json(new ApiResponse(200, products, "Products fetched successfully"));
     } catch (error) {
-        console.log("Error in Fetching  the Products", error);
-        return res.status(500).json(new ApiError(500, "Internal Server Error"));
-
+        console.error("Error fetching products:", error);
+        return res.status(error.statusCode || 500).json(
+            new ApiError(error.statusCode || 500, error.message || "Internal Server Error")
+        );
     }
+});
 
-
-})
 const getSingleProduct = asyncHandler(async (req, res) => {
 
     try {
@@ -269,7 +332,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 export {
     createProduct,
-    getProducts,
+    getAllProducts,
     getSingleProduct,
     updateProduct,
     deleteProduct

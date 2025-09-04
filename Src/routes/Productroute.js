@@ -5,7 +5,7 @@ import {
     createProduct,
     deleteProduct,
     getSingleProduct,
-    getProducts,
+    getAllProducts,
     updateProduct,
    
 } from "../Controllers/ProductController.js";
@@ -13,7 +13,7 @@ import {
 const router = Router();
 
 router.route('/create-product').post(verifyJWT, isAdmin,upload.single('photo'), createProduct)
-router.route('/get-products').get(getProducts)
+router.route('/get-products').get(getAllProducts)
 router.route('/get-single-product/:slug').get(getSingleProduct)
 router.route('/delete-product/:id').delete(verifyJWT,isAdmin,deleteProduct)
 router.route('/update-product/:id').put(verifyJWT,isAdmin, upload.single("photo"),updateProduct)
